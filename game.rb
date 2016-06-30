@@ -4,13 +4,15 @@ require './player.rb'
 
 class Game
 
-  attr_accessor :player, :computer, :player_card, :computer_card, :player_wins, :computer_wins
+  attr_accessor :player, :computer, :player_card, :computer_card, :player_wins, :computer_wins, :draw_cards, :discard_cards
 
   def initialize
     @player = Player.new
     @computer =  Player.new
     @player_wins = []
     @computer_wins = []
+    @draw_cards = []
+    @discard_cards = []
   end
 
   def intro
@@ -35,7 +37,6 @@ class Game
   end
 
   def determine_high_card
-    draw_cards = []
     if computer_card.value > player_card.value
       computer_wins << player_card
       computer_wins << computer_card
@@ -47,9 +48,43 @@ class Game
     else
       draw_cards << player_card
       draw_cards << computer_card
-      puts "It's a draw!"
+      puts "This means war!"
+      this_means_war
     end
   end
+
+  def this_means_war
+    while player.deck.length == 0
+      self.discard_cards << draw_cards
+      puts "No more cards to play"
+      determine_winner
+      rematch
+    end
+      self.computer_card = computer.draw
+      puts "I drew the #{computer_card}"
+      self.player_card = player.draw
+      puts "You drew the #{player_card}"
+      determine_high_card
+  end
+
+  def determine_war
+    if computer_card.value > player_card.value
+      computer_wins << player_card
+      computer_wins << computer_card
+      computer_wins << draw_cards
+      puts "I win! My #{computer_card} beats your #{player_card}"
+    elsif player_card.value > computer_card.value
+      player_wins << player_card
+      player_wins << computer_card
+      player_wins << draw_cards
+      puts "You win! Your #{player_card} beats my #{computer_card}"
+    else
+      discard_cards << player_card
+      discard_cards << computer_card
+      discard_cards << draw_cards
+    end
+  end
+
 
   def determine_winner
     if computer_wins.length > player_wins.length
@@ -57,7 +92,8 @@ class Game
     elsif player_wins.length > computer_wins.length
       puts "You have bested me #{player_wins.length} to #{computer_wins.length}!"
     else
-      puts "We have come to a stalemate, we must play again"
+      puts "We have come to a stalemate! We must play again!"
+      gets
       Game.new.play(false)
     end
   end
@@ -68,7 +104,7 @@ class Game
     if resp == "y"
       Game.new.play(false)
     else
-      puts "Peace!"
+      puts "Peace! Thank you for playing."
       exit
     end
   end

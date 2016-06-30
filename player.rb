@@ -1,18 +1,18 @@
 class Player
 
-    attr_accessor :new_deck
+    attr_accessor :my_deck
 
     def initialize
-      @new_deck = Deck.new
+      @my_deck = Deck.new
       deck_shuffle
     end
 
     def deck_shuffle
-      new_deck.deck.shuffle!
+      my_deck.deck.shuffle!
     end
 
     def deck
-      new_deck.deck
+      my_deck.deck
     end
 
     def draw
